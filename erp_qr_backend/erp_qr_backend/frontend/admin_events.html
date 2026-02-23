@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Event Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Create Event</h1>
+
+    <input type="text" id="title" placeholder="Event Title">
+    <input type="text" id="description" placeholder="Event Description">
+    <input type="date" id="date">
+    <input type="number" id="admin_id" placeholder="Admin ID">
+
+    <label>
+        <input type="checkbox" id="is_intercollege">
+        Intercollege Event
+    </label>
+
+    <button onclick="createNewEvent()">Create Event</button>
+
+    <p id="result"></p>
+</div>
+
+<script>
+
+async function createNewEvent() {
+
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const date = document.getElementById("date").value;
+    const admin_id = document.getElementById("admin_id").value;
+    const is_intercollege = document.getElementById("is_intercollege").checked;
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/create-event?title=${title}&description=${description}&date=${date}&admin_id=${admin_id}&is_intercollege=${is_intercollege}`,
+        { method: "POST" }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("result").innerText = data.message || data.detail;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+{% if student %}
+
+<h2>Welcome {{ student.name }}</h2>
+<p>Status: <b>{{ student.status }}</b></p>
+
+<a href="/" style="color:blue;">Logout</a>
+
+<hr>
+
+{% if active_leave %}
+<div style="background-color:#d1ecf1; padding:10px; margin-bottom:15px; border-radius:5px;">
+    <b>Currently On Leave</b><br>
+    From: {{ active_leave.out_date }} {{ active_leave.out_time }}<br>
+    To: {{ active_leave.in_date }} {{ active_leave.in_time }}<br>
+    Duration: {{ active_leave.duration }} hours
+</div>
+{% endif %}
+
+<h3>Apply Leave</h3>
+
+<form method="post" action="/apply_leave/{{ student.id }}">
+    <textarea name="reason" placeholder="Reason" required></textarea><br><br>
+
+    <label>Out Date:</label>
+    <input type="date" name="out_date" required>
+
+    <label>Out Time:</label>
+    <input type="time" name="out_time" required><br><br>
+
+    <label>In Date:</label>
+    <input type="date" name="in_date" required>
+
+    <label>In Time:</label>
+    <input type="time" name="in_time" required><br><br>
+
+    <button type="submit">Apply Leave</button>
+</form>
+
+<hr>
+
+<h3>Your Leave Requests</h3>
+
+{% if leaves and leaves|length > 0 %}
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Reason</th>
+        <th>Out Date</th>
+        <th>Out Time</th>
+        <th>In Date</th>
+        <th>In Time</th>
+        <th>Duration (Hours)</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for leave in leaves %}
+    <tr {% if leave.status == "Approved" %} style="background-color:#fff3cd;" {% endif %}>
+        <td>{{ leave.reason }}</td>
+        <td>{{ leave.out_date }}</td>
+        <td>{{ leave.out_time }}</td>
+        <td>{{ leave.in_date }}</td>
+        <td>{{ leave.in_time }}</td>
+        <td>{{ leave.duration }}</td>
+
+        <td>
+            {% if leave.status == "Approved" %}
+                <span style="color:green;"><b>Approved</b></span>
+            {% elif leave.status == "Rejected" %}
+                <span style="color:red;"><b>Rejected</b></span>
+            {% elif leave.status == "Cancelled" %}
+                <span style="color:gray;"><b>Cancelled</b></span>
+            {% else %}
+                <span style="color:orange;"><b>Pending</b></span>
+            {% endif %}
+        </td>
+
+        <td>
+            {% if leave.status == "Pending" %}
+                <form method="post" action="/cancel_leave/{{ leave.id }}/{{ student.id }}">
+                    <button type="submit">Cancel</button>
+                </form>
+            {% else %}
+                -
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+<p>No leave requests submitted yet.</p>
+{% endif %}
+
+{% else %}
+
+<h2>Student Not Found</h2>
+<p>Please check your login credentials.</p>
+
+{% endif %}
+
+</body>
+</html>

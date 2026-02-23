@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RT Page</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>RT Approval Page</h2>
+
+<h3>Pending Leave Requests</h3>
+
+{% if requests and requests|length > 0 %}
+
+    {% for req in requests %}
+    <div class="card">
+        <p><b>Name:</b> {{ req.name }}</p>
+        <p><b>Block:</b> {{ req.block_no }}</p>
+        <p><b>Room:</b> {{ req.room_no }}</p>
+        <p><b>Parent Phone:</b> {{ req.parent_phone }}</p>
+        <p><b>Reason:</b> {{ req.reason }}</p>
+
+        <form method="post" action="/update_leave/{{ req.id }}">
+            <button name="action" value="approve" class="approve">Approve</button>
+            <button name="action" value="reject" class="reject">Reject</button>
+        </form>
+    </div>
+    {% endfor %}
+
+{% else %}
+    <p>No pending leave requests.</p>
+{% endif %}
+
+<hr>
+
+<h3>Hostel Students Status</h3>
+
+{% if students and students|length > 0 %}
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Name</th>
+        <th>Block No</th>
+        <th>Room No</th>
+        <th>Parent Phone</th>
+        <th>Status</th>
+    </tr>
+
+    {% for student in students %}
+    <tr>
+        <td>{{ student.name }}</td>
+        <td>{{ student.block_no }}</td>
+        <td>{{ student.room_no }}</td>
+        <td>{{ student.parent_phone }}</td>
+        <td>
+            {% if student.status == "On Leave" %}
+                <span style="color:orange;"><b>On Leave</b></span>
+            {% elif student.status == "Out" %}
+                <span style="color:red;"><b>Out</b></span>
+            {% else %}
+                <span style="color:green;"><b>Present</b></span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+    <p>No students found.</p>
+{% endif %}
+
+</body>
+</html>

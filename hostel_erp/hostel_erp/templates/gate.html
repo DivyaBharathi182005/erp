@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gate Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>Gate Management</h2>
+
+<h3>Scan Student</h3>
+
+<form method="post" action="/gate_action">
+    <input type="number" name="student_id" placeholder="Enter Student ID" required>
+    <button type="submit">Scan</button>
+</form>
+
+<hr>
+
+<h3>Student Status</h3>
+
+{% if students %}
+<table border="1" cellpadding="10">
+<tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Room</th>
+    <th>Status</th>
+</tr>
+
+{% for student in students %}
+<tr>
+    <td>{{ student.name }}</td>
+    <td>{{ student.block_no }}</td>
+    <td>{{ student.room_no }}</td>
+    <td>{{ student.status }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<hr>
+
+<h3>Gate Logs</h3>
+
+{% if logs %}
+<table border="1" cellpadding="10">
+<tr>
+    <th>Name</th>
+    <th>Exit Time</th>
+    <th>Entry Time</th>
+</tr>
+
+{% for log in logs %}
+<tr>
+    <td>{{ log.name }}</td>
+    <td>{{ log.exit_time }}</td>
+    <td>{{ log.entry_time }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No gate activity yet.</p>
+{% endif %}
+
+</body>
+</html>

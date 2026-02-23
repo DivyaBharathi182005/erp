@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Attendance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Attendance Report</h2>
+
+    <button onclick="loadAttendance()">Load Attendance</button>
+
+    <table border="1" width="100%" id="attendanceTable" style="margin-top:20px;">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Date</th>
+                <th>Course</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+
+<script>
+
+async function loadAttendance() {
+
+    const response = await fetch("http://127.0.0.1:8000/full-attendance");
+    const data = await response.json();
+
+    const tbody = document.querySelector("#attendanceTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(row => {
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${row.student_id}</td>
+            <td>${row.student_name}</td>
+            <td>${row.date}</td>
+            <td>${row.course_name}</td>
+            <td>${row.status}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+</script>
+
+</body>
+</html>

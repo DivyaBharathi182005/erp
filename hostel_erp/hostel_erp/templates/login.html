@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hostel ERP - Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div style="width:350px; margin:80px auto; padding:30px; background:white; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+
+    <h2 style="text-align:center;">Hostel ERP Login</h2>
+
+    <form method="post" action="/login">
+
+        <label><b>Student Name</b></label>
+        <input type="text" name="name" placeholder="Enter Student Name" required>
+
+        <label><b>Student ID</b></label>
+        <input type="number" name="student_id" placeholder="Enter Student ID" required>
+
+        <button type="submit" style="width:100%; margin-top:15px;">Login</button>
+
+    </form>
+
+    <hr>
+
+    <div style="text-align:center;">
+        <a href="/rt">RT Dashboard</a> |
+        <a href="/gate">Gate Management</a>
+    </div>
+
+</div>
+
+</body>
+</html>

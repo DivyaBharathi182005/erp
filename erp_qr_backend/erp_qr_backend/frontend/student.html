@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Attendance</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Student Attendance</h1>
+
+    <input type="number" id="student_id" placeholder="Enter Student ID">
+
+    <button type="button" id="scanBtn">Start Scanning</button>
+
+    <div id="reader" style="width:320px; margin-top:20px;"></div>
+
+    <p id="result" style="margin-top:15px; font-weight:bold;"></p>
+
+</div>
+
+<script>
+
+let html5QrCode = null;
+let cameraRunning = false;
+
+document.getElementById("scanBtn").addEventListener("click", startScanner);
+
+function startScanner() {
+
+    const studentId = document.getElementById("student_id").value;
+
+    if (!studentId) {
+        showMessage("Please enter Student ID", "red");
+        return;
+    }
+
+    if (cameraRunning) {
+        showMessage("Camera already running", "orange");
+        return;
+    }
+
+    html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(devices => {
+
+        if (devices.length === 0) {
+            showMessage("No camera found", "red");
+            return;
+        }
+
+        // 🔥 FORCE BACK CAMERA
+        let backCamera = devices.find(device =>
+            device.label.toLowerCase().includes("back") ||
+            device.label.toLowerCase().includes("environment")
+        );
+
+        const cameraId = backCamera ? backCamera.id : devices[0].id;
+
+        html5QrCode.start(
+            cameraId,
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            qrMessage => {
+                stopScanner();
+                markAttendance(qrMessage, studentId);
+            },
+            errorMessage => {
+                // ignore frame errors
+            }
+        );
+
+        cameraRunning = true;
+
+    }).catch(err => {
+        showMessage("Camera permission denied", "red");
+    });
+}
+
+function stopScanner() {
+    if (html5QrCode && cameraRunning) {
+        html5QrCode.stop().then(() => {
+            cameraRunning = false;
+        });
+    }
+}
+
+async function markAttendance(qrData, studentId) {
+
+    try {
+
+        const response = await fetch(
+            `https://emanative-interseptal-audrea.ngrok-free.dev/mark-attendance?qr_data=${qrData}&student_id=${studentId}`,
+            { method: "POST" }
+        );
+
+        const data = await response.json();
+
+        if (data.message) {
+            showMessage(data.message, "green");
+        } else if (data.error) {
+            showMessage(data.error, "red");
+        } else {
+            showMessage("Unknown response", "red");
+        }
+
+    } catch (error) {
+        showMessage("Backend connection failed", "red");
+    }
+}
+
+function showMessage(msg, color) {
+    const result = document.getElementById("result");
+    result.innerText = msg;
+    result.style.color = color;
+}
+
+</script>
+
+</body>
+</html>

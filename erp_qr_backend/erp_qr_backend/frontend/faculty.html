@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Faculty Attendance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Faculty Attendance</h1>
+
+    <input type="number" id="course_id" placeholder="Course ID">
+    <input type="number" id="faculty_id" placeholder="Faculty ID">
+
+    <button type="button" onclick="startSession()">Start Session</button>
+
+    <div class="qr-box" style="margin-top:20px;">
+        <img id="qrImage" width="250">
+    </div>
+
+   
+
+   
+
+    <button type="button" onclick="closeSession()">Close Session</button>
+</div>
+
+<script>
+
+let sessionCode = "";
+let refreshInterval = null;
+
+async function startSession() {
+
+    const course_id = document.getElementById("course_id").value;
+    const faculty_id = document.getElementById("faculty_id").value;
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/start-session?course_id=${course_id}&faculty_id=${faculty_id}`,
+        { method: "POST" }
+    );
+
+    const data = await response.json();
+    sessionCode = data.session_code;
+
+    generateQR();
+    startLiveUpdates();
+}
+
+function generateQR() {
+    if (!sessionCode) return;
+
+    document.getElementById("qrImage").src =
+        `http://127.0.0.1:8000/generate-qr/${sessionCode}?t=` + new Date().getTime();
+
+    setTimeout(generateQR, 60000);
+}
+
+function startLiveUpdates() {
+    refreshInterval = setInterval(fetchPresentStudents, 5000);
+}
+
+async function fetchPresentStudents() {
+
+    if (!sessionCode) return;
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/present-students/${sessionCode}`
+    );
+
+    const data = await response.json();
+
+    document.getElementById("attendanceCount").innerText = data.count;
+
+    const list = document.getElementById("studentList");
+    list.innerHTML = "";
+
+    data.students.forEach(student => {
+        const li = document.createElement("li");
+        li.innerText = "Student ID: " + student.student_id;
+        list.appendChild(li);
+    });
+}
+
+async function closeSession() {
+
+    await fetch(
+        `http://127.0.0.1:8000/close-session/${sessionCode}`,
+        { method: "POST" }
+    );
+
+    clearInterval(refreshInterval);
+
+    document.getElementById("attendanceCount").innerText = 0;
+    document.getElementById("studentList").innerHTML = "";
+    document.getElementById("qrImage").src = "";
+
+    alert("Session Closed");
+}
+
+</script>
+
+</body>
+</html>
