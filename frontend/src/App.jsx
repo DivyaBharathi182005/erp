@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION — Set your AI key here (Groq or OpenAI or Anthropic)
 // ─────────────────────────────────────────────────────────────────────────────
-const API = "http://localhost:8000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 // ─── API Helper ──────────────────────────────────────────────────────────────
 async function api(path, opts = {}) {
