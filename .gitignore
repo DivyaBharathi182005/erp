@@ -1,0 +1,32 @@
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+
+# Python environments and generated files
+venv/
+venv*/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# JavaScript dependencies and build output
+node_modules/
+dist/
+frontend/.vite/
+backend/package-lock.json
+*.bak
+
+# Local IDE and operating-system files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local logs and temporary files
+*.log
+*.tmp
